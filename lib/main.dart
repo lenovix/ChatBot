@@ -53,24 +53,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final messageController = TextEditingController();
-
-  List<Map> messages = [];
 
   void response(query) async {
-    AuthGoogle authGoogle =
-        await AuthGoogle(fileJson: "assets/service.json").build();
+    AuthGoogle authGoogle = await AuthGoogle(
+        fileJson: "assets/service.json")
+        .build();
     Dialogflow dialogflow =
-        Dialogflow(authGoogle: authGoogle, language: Language.english);
+    Dialogflow(authGoogle: authGoogle, language: Language.english);
     AIResponse aiResponse = await dialogflow.detectIntent(query);
     setState(() {
-      messages.insert(0, {
+      messsages.insert(0, {
         "data": 0,
-        "messages": aiResponse.getListMessage()[0]["text"]["text"][0].toString()
+        "message": aiResponse.getListMessage()[0]["text"]["text"][0].toString()
       });
     });
+
+
     print(aiResponse.getListMessage()[0]["text"]["text"][0].toString());
-  }
+   }
+
+   final messageInsert = TextEditingController();
+   List<Map> messsages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -82,89 +85,107 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(
+          "Chat bot",
+        ),
       ),
       body: Container(
         child: Column(
-          children: [
-            Center(
-              child: Container(
-                padding: const EdgeInsets.only(top: 15, bottom: 18),
-                child: Text(
-                  "Today, ${DateFormat("Hm").format(DateTime.now())}",
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ),
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.only(top: 15, bottom: 10),
+              child: Text("Today, ${DateFormat("Hm").format(DateTime.now())}", style: TextStyle(
+                fontSize: 20
+              ),),
             ),
             Flexible(
-              child: ListView.builder(
-                reverse: true,
-                itemCount: 0,
-                itemBuilder: (context, index) => chat(
-                    messages[index]["message"].toString(),
-                    messages[index]["data"]),
-              ),
+                child: ListView.builder(
+                    reverse: true,
+                    itemCount: messsages.length,
+                    itemBuilder: (context, index) => chat(
+                        messsages[index]["message"].toString(),
+                        messsages[index]["data"]))),
+            SizedBox(
+              height: 20,
             ),
-            const Divider(
-              height: 5,
+
+            Divider(
+              height: 5.0,
               color: Colors.greenAccent,
             ),
             Container(
+
+
               child: ListTile(
-                leading: IconButton(
-                  icon: const Icon(
-                    Icons.camera_alt,
-                    color: Colors.greenAccent,
-                    size: 35,
+
+                  leading: IconButton(
+                    icon: Icon(Icons.camera_alt, color: Colors.greenAccent, size: 35,), onPressed: () {  },
                   ),
-                  onPressed: () {},
-                ),
-                title: Container(
-                  height: 35,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      color: Color.fromRGBO(220, 220, 220, 1)),
-                  padding: const EdgeInsets.only(left: 15),
-                  child: TextFormField(
-                    controller: messageController,
-                    decoration: const InputDecoration(
-                      hintText: "Enter a message",
-                      hintStyle: TextStyle(color: Colors.black26),
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
+
+                  title: Container(
+                    height: 35,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(
+                          15)),
+                      color: Color.fromRGBO(220, 220, 220, 1),
                     ),
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    padding: EdgeInsets.only(left: 15),
+                    child: TextFormField(
+                      controller: messageInsert,
+                      decoration: InputDecoration(
+                        hintText: "Enter a Message...",
+                        hintStyle: TextStyle(
+                            color: Colors.black26
+                        ),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black
+                      ),
+                      onChanged: (value) {
+
+                      },
+                    ),
                   ),
-                ),
-                trailing: IconButton(
-                  icon: const Icon(
-                    Icons.send,
-                    size: 30,
-                    color: Colors.greenAccent,
-                  ),
-                  onPressed: () {
-                    if (messageController.text.isEmpty) {
-                      print("empty message");
-                    } else {
-                      setState(() {
-                        messages.insert(
-                            0, {"data": 1, "message": messageController.text});
-                      });
-                      response(messageController.text);
-                      messageController.clear();
-                    }
-                    FocusScopeNode currentFocus = FocusScope.of(context);
-                    if (!currentFocus.hasPrimaryFocus) {
-                      currentFocus.unfocus();
-                    }
-                  },
-                ),
+
+                  trailing: IconButton(
+
+                      icon: Icon(
+
+                        Icons.send,
+                        size: 30.0,
+                        color: Colors.greenAccent,
+                      ),
+                      onPressed: () {
+
+                        if (messageInsert.text.isEmpty) {
+                          print("empty message");
+                        } else {
+                          setState(() {
+                            messsages.insert(0,
+                                {"data": 1, "message": messageInsert.text});
+                          });
+                          response(messageInsert.text);
+                          messageInsert.clear();
+                        }
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+                        if (!currentFocus.hasPrimaryFocus) {
+                          currentFocus.unfocus();
+                        }
+                      }),
+
               ),
+
+            ),
+
+            SizedBox(
+              height: 15.0,
             )
           ],
         ),
@@ -174,61 +195,61 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget chat(String message, int data) {
     return Container(
-      padding: const EdgeInsets.only(left: 20, right: 20),
+      padding: EdgeInsets.only(left: 20, right: 20),
+
       child: Row(
-        mainAxisAlignment:
-            data == 1 ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          data == 0
-              ? Container(
-                  height: 60,
-                  width: 60,
-                  child: const CircleAvatar(
-                    backgroundImage: AssetImage("assets/robot.jpg"),
-                  ),
-                )
-              : Container(),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Bubble(
-              radius: const Radius.circular(15),
-              color: data == 0
-                  ? const Color.fromRGBO(23, 157, 139, 1)
-                  : Colors.orangeAccent,
-              elevation: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(2),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Flexible(
-                        child: Container(
-                      constraints: const BoxConstraints(maxWidth: 200),
-                      child: Text(
-                        message,
-                        style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    ))
-                  ],
-                ),
+          mainAxisAlignment: data == 1 ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: [
+
+            data == 0 ? Container(
+              height: 60,
+              width: 60,
+              child: CircleAvatar(
+                backgroundImage: AssetImage("assets/robot.jpg"),
               ),
-            ),
-          ),
-          data == 1
-              ? Container(
-                  height: 60,
-                  width: 60,
-                  child: const CircleAvatar(
-                    backgroundImage: AssetImage("assets/default.jpg"),
+            ) : Container(),
+
+        Padding(
+        padding: EdgeInsets.all(10.0),
+        child: Bubble(
+            radius: Radius.circular(15.0),
+            color: data == 0 ? Color.fromRGBO(23, 157, 139, 1) : Colors.orangeAccent,
+            elevation: 0.0,
+
+            child: Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+
+                  SizedBox(
+                    width: 10.0,
                   ),
-                )
-              : Container(),
-        ],
+                  Flexible(
+                      child: Container(
+                        constraints: BoxConstraints( maxWidth: 200),
+                        child: Text(
+                          message,
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ))
+                ],
+              ),
+            )),
       ),
+
+
+            data == 1? Container(
+              height: 60,
+              width: 60,
+              child: CircleAvatar(
+                backgroundImage: AssetImage("assets/default.jpg"),
+              ),
+            ) : Container(),
+
+          ],
+        ),
     );
   }
 }
